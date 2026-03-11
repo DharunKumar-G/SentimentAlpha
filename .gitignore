@@ -22,3 +22,6 @@ Thumbs.db
 # Logs
 logs/
 *.log
+
+# Streamlit secrets (not config)
+.streamlit/secrets.toml
