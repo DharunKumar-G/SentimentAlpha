@@ -105,6 +105,16 @@ def render_sidebar():
                 "Ask the AI",
                 "Settings",
             ],
+            captions=[
+                "Overview and key metrics",
+                "Browse all scraped news articles",
+                "Visual map of sentiment across stocks",
+                "Sudden sentiment shift warnings",
+                "Strategy performance comparison",
+                "ML model predictions and features",
+                "Type a stock name, get a research report",
+                "Database stats and pipeline commands",
+            ],
         )
 
         st.divider()
@@ -128,6 +138,38 @@ def render_sidebar():
 def page_dashboard():
     st.title("SentimentAlpha Dashboard")
     st.markdown("**AI-Powered News Sentiment Trading Engine for Nifty 50**")
+
+    # Getting Started guide (collapsible)
+    with st.expander("How to Use This App — Click to expand", expanded=False):
+        st.markdown("""
+**What is SentimentAlpha?**
+
+This app scrapes financial news about Indian Nifty 50 stocks, uses an AI model (FinBERT) to determine whether each article is **bullish**, **bearish**, or **neutral**, then builds trading signals from that sentiment data.
+
+---
+
+**Pages explained:**
+
+| Page | What it does |
+|---|---|
+| **Dashboard** (this page) | Shows key numbers, latest news with sentiment tags, alerts, and top bullish/bearish stocks |
+| **Live News Feed** | Browse all scraped articles — filter by stock, sentiment, or source |
+| **Sentiment Heatmap** | A treemap showing which stocks have the most positive or negative news sentiment |
+| **Alerts** | Flags stocks where sentiment has suddenly shifted (e.g. a company went from bullish to bearish overnight) |
+| **Backtesting** | Shows how trading strategies based on sentiment would have performed historically |
+| **ML Models** | Displays predictions from Random Forest and XGBoost models trained on sentiment + price data |
+| **Ask the AI** | Type any stock name (e.g. "Reliance" or "TCS") and get a full research summary with sentiment breakdown |
+| **Settings** | View database statistics and find terminal commands to re-run the pipeline |
+
+---
+
+**How to refresh data (run in terminal):**
+```bash
+source venv/bin/activate
+python main.py --full
+```
+This re-scrapes news, re-analyzes sentiment, rebuilds factors, and re-runs backtests.
+        """)
 
     # Top metrics row
     col1, col2, col3, col4, col5 = st.columns(5)
@@ -215,6 +257,7 @@ def page_dashboard():
 
 def page_news_feed():
     st.title("Live News Feed")
+    st.caption("All scraped news articles with AI sentiment scores. Use the filters below to narrow down.")
 
     # Filters
     col1, col2, col3 = st.columns(3)
@@ -442,7 +485,7 @@ def page_backtesting():
     backtests = db.get_all_backtests()
 
     if not backtests:
-        st.info("No backtest results yet. Run the backtesting module first!")
+        st.info("No backtest results yet. Run `python main.py --backtest` in the terminal to generate results.")
 
         st.markdown("""
         ### How to run backtests:
@@ -584,6 +627,11 @@ def page_ask_ai():
     st.markdown(
         "Type a stock name or ticker to get an AI-generated research summary "
         "based on recent news and sentiment analysis."
+    )
+
+    st.info(
+        "**Try it:** Type a stock name like **Reliance**, **TCS**, **Infosys**, **HDFC Bank**, "
+        "or any Nifty 50 company. You can also use tickers like **INFY.NS**."
     )
 
     # Chat history
