@@ -5,7 +5,6 @@ __pycache__/
 *.pyc
 
 # Data
-data/*.db
 data/cache/
 
 # Models
