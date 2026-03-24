@@ -163,10 +163,18 @@ This app scrapes financial news about Indian Nifty 50 stocks, uses an AI model (
 
 ---
 
-**How to refresh data (run in terminal):**
+**First-time setup on Streamlit Cloud:**
+1. Go to your app's **Settings → Secrets** in Streamlit Cloud
+2. Add your API key:
+```toml
+LLM_PROVIDER = "anthropic"
+ANTHROPIC_API_KEY = "sk-ant-..."
+```
+3. Redeploy — the app will use Claude to analyze sentiment automatically.
+
+**How to refresh data (local terminal):**
 ```bash
-source venv/bin/activate
-python main.py --full
+./run.sh --full
 ```
 This re-scrapes news, re-analyzes sentiment, rebuilds factors, and re-runs backtests.
         """)
@@ -775,23 +783,30 @@ def page_settings():
 
     st.divider()
 
-    st.subheader("Run Pipeline Components")
-    st.markdown("Use the terminal to run pipeline components:")
+    st.subheader("Streamlit Cloud Setup")
+    st.markdown(
+        "Configure API keys in **App Settings → Secrets** on Streamlit Cloud:"
+    )
+    st.code(
+        'LLM_PROVIDER = "anthropic"\nANTHROPIC_API_KEY = "sk-ant-..."\n'
+        '# or OpenAI:\n# LLM_PROVIDER = "openai"\n# OPENAI_API_KEY = "sk-..."',
+        language="toml",
+    )
 
+    st.divider()
+
+    st.subheader("Run Pipeline (local terminal)")
     st.code("""
 # Full pipeline (ingest → analyze → build factors → backtest → train ML)
-python main.py --full
+./run.sh --full
 
 # Individual components
-python ingestion.py          # Scrape news
-python price_data.py         # Fetch stock prices
-python sentiment_analyzer.py # Run LLM sentiment analysis
-python factor_builder.py     # Build sentiment factors
-python backtester.py         # Run backtests
-python ml_models.py          # Train ML models
-
-# Start the dashboard
-streamlit run dashboard.py
+./run.sh --ingest       # Scrape news
+./run.sh --prices       # Fetch stock prices
+./run.sh --sentiment    # Run LLM sentiment analysis
+./run.sh --factors      # Build sentiment factors
+./run.sh --backtest     # Run backtests
+./run.sh --ml           # Train ML models
     """, language="bash")
 
 

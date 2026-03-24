@@ -10,6 +10,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# ── Streamlit Cloud secrets support ────────────────────────────────────────
+def _secret(key: str, default: str = "") -> str:
+    """Read from st.secrets (Streamlit Cloud) with fallback to env vars."""
+    try:
+        import streamlit as st
+        return st.secrets.get(key, os.getenv(key, default))
+    except Exception:
+        return os.getenv(key, default)
+
 # ── Paths ──────────────────────────────────────────────────────────────────
 PROJECT_ROOT = Path(__file__).parent
 DATA_DIR = PROJECT_ROOT / "data"
@@ -20,14 +29,14 @@ for _dir in [DATA_DIR, MODELS_DIR, LOGS_DIR, DATA_DIR / "cache"]:
     _dir.mkdir(parents=True, exist_ok=True)
 
 # ── Database ───────────────────────────────────────────────────────────────
-DATABASE_PATH = PROJECT_ROOT / os.getenv("DATABASE_PATH", "data/sentimentalpha.db")
+DATABASE_PATH = PROJECT_ROOT / _secret("DATABASE_PATH", "data/sentimentalpha.db")
 
 # ── LLM ────────────────────────────────────────────────────────────────────
-LLM_PROVIDER = os.getenv("LLM_PROVIDER", "finbert")  # anthropic | openai | finbert
-ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
-ANTHROPIC_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-20250514")
-OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+LLM_PROVIDER = _secret("LLM_PROVIDER", "finbert")  # anthropic | openai | finbert
+ANTHROPIC_API_KEY = _secret("ANTHROPIC_API_KEY", "")
+OPENAI_API_KEY = _secret("OPENAI_API_KEY", "")
+ANTHROPIC_MODEL = _secret("ANTHROPIC_MODEL", "claude-sonnet-4-5")
+OPENAI_MODEL = _secret("OPENAI_MODEL", "gpt-4o-mini")
 
 # ── Scraping ───────────────────────────────────────────────────────────────
 SCRAPE_INTERVAL_MINUTES = int(os.getenv("SCRAPE_INTERVAL_MINUTES", "30"))
